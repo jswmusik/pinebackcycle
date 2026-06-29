@@ -1,0 +1,27 @@
+# Python / Django
+backend/venv/
+__pycache__/
+*.pyc
+backend/db.sqlite3
+*.log
+
+# Miljövariabler / hemligheter
+.env
+.env.local
+backend/.env
+
+# Node / Next.js
+frontend/node_modules/
+frontend/.next/
+frontend/out/
+frontend/.env*.local
+
+# OS / editor
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# Verktyg / lokalt
+cloudflared.exe
+backend/staticfiles/
