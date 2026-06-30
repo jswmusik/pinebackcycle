@@ -45,6 +45,12 @@ body {
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
 }
+/* Säkerhetsnät mot horisontell scroll om något barn råkar bli för brett.
+   `clip` (till skillnad från `hidden`) skapar ingen scroll-container och
+   påverkar därför inte position: sticky (topbar m.m.). */
+body {
+  overflow-x: clip;
+}
 
 a {
   color: var(--primary);
@@ -151,6 +157,10 @@ input,
 select,
 textarea {
   width: 100%;
+  /* Får aldrig bli bredare än sin container, och ska kunna krympa som
+     flex-/grid-barn (annars spräcker date/time-fält kortet på mobil). */
+  max-width: 100%;
+  min-width: 0;
   padding: 11px 13px;
   border: 1px solid var(--border-strong);
   border-radius: 11px;
@@ -319,6 +329,17 @@ tbody tr:hover {
 }
 .space-between {
   justify-content: space-between;
+}
+/* Fält och formkontroller i flex-rader och rutnät ska kunna krympa istället
+   för att tränga ut ur sin container (gäller särskilt date/time/select). */
+.field {
+  min-width: 0;
+}
+.row > input,
+.row > select,
+.row > textarea,
+.row > .field {
+  min-width: 0;
 }
 
 .badge {
@@ -1514,10 +1535,20 @@ tbody tr:hover {
   /* Större touch-ytor */
   button,
   .btn {
-    padding: 12px 18px;
+    padding: 13px 20px;
+    font-size: 14.5px;
   }
   .btn-sm {
-    padding: 9px 13px;
+    padding: 10px 15px;
+    font-size: 13.5px;
+  }
+  /* Primär CTA i ett formulär: full bredd + luft för enkel tumträff.
+     `:not(.row)` skyddar inline-formulär (t.ex. sökfältet) från att stapla. */
+  form:not(.row) > button[type="submit"],
+  form:not(.row) > .btn-block {
+    width: 100%;
+    justify-content: center;
+    margin-top: 8px;
   }
   input,
   select,
