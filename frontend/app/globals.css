@@ -445,6 +445,41 @@ tbody tr:hover {
   font-size: 15px;
 }
 
+/* --- App-footer (versionsstämpel) --- */
+.app-footer {
+  text-align: center;
+  padding: 16px 14px calc(20px + env(safe-area-inset-bottom));
+  color: var(--muted);
+  font-size: 12.5px;
+  letter-spacing: 0.01em;
+}
+.app-version {
+  font-weight: 600;
+  color: var(--text);
+  opacity: 0.7;
+}
+/* Dölj footern på helskärmsvyer (cykelläge, navigator, login/spinner) så den
+   inte skapar onödig scroll under kartan. */
+body:has(.ride-page) .app-footer,
+body:has(.nav-page) .app-footer,
+body:has(.center-screen) .app-footer {
+  display: none;
+}
+
+/* --- "Beräkna rutt"-knapp ovanpå kartan --- */
+.map-calc {
+  position: absolute;
+  bottom: 14px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 1000;
+}
+.map-calc-btn {
+  box-shadow: var(--shadow-lg);
+  font-size: 15px;
+  padding: 13px 24px;
+}
+
 /* --- Toast --- */
 .toast-viewport {
   position: fixed;
@@ -1591,6 +1626,25 @@ tbody tr:hover {
   }
   .modal-body {
     padding: 18px 16px calc(18px + env(safe-area-inset-bottom));
+  }
+  /* Start/Slut-tiderna staplas på var sin rad så de aldrig trängs ihop. */
+  .stage-times {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .stage-times .field {
+    flex: 1 1 auto;
+    width: 100%;
+  }
+  /* Kart-knappen får inte bli bredare än kartan på små skärmar. */
+  .map-calc {
+    left: 12px;
+    right: 12px;
+    transform: none;
+  }
+  .map-calc-btn {
+    width: 100%;
+    justify-content: center;
   }
   /* Dagsrad staplar snyggare */
   .day-row {

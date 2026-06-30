@@ -72,6 +72,9 @@ export default function RouteMap({
   onChange,
   editable = true,
   onUseAsAccommodation = null,
+  onCalculate = null,
+  calculating = false,
+  canCalculate = false,
 }) {
   const toast = useToast();
   const [map, setMap] = useState(null);
@@ -246,6 +249,20 @@ export default function RouteMap({
         <div className="ride-legend" style={{ top: "auto", bottom: 10 }}>
           <span><i className="leg-nav" /> Planerad rutt</span>
           <span><i className="leg-you" /> Verklig rutt</span>
+        </div>
+      )}
+
+      {onCalculate && (
+        <div className="map-calc">
+          <button
+            className="btn map-calc-btn"
+            onClick={onCalculate}
+            disabled={!canCalculate || calculating}
+          >
+            {calculating
+              ? "Beräknar…"
+              : `🧮 Beräkna rutt (${waypoints.length} punkter)`}
+          </button>
         </div>
       )}
     </div>

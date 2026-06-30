@@ -529,15 +529,6 @@ function Stages({ day, onChanged, toast }) {
               >
                 Rensa punkter
               </button>
-              <button
-                className="btn-sm"
-                onClick={saveAndCalculate}
-                disabled={activePoints.length < 2 || calculating}
-              >
-                {calculating
-                  ? "Beräknar…"
-                  : `Beräkna rutt (${activePoints.length} punkter)`}
-              </button>
             </div>
           </div>
 
@@ -568,6 +559,9 @@ function Stages({ day, onChanged, toast }) {
             track={day.actual_track}
             onChange={setPoints}
             onUseAsAccommodation={useAsAccommodation}
+            onCalculate={saveAndCalculate}
+            calculating={calculating}
+            canCalculate={activePoints.length >= 2}
           />
 
           {!isDraft && active.route_geometry && (
@@ -668,7 +662,7 @@ function StageRow({
           <label>Till</label>
           <input value={to} onChange={(e) => setTo(e.target.value)} onBlur={saveField} />
         </div>
-        <div className="row" style={{ alignItems: "flex-end" }}>
+        <div className="row stage-times" style={{ alignItems: "flex-end" }}>
           <div className="field" style={{ flex: 1 }}>
             <label>Start</label>
             <input type="time" value={start} onChange={(e) => setStart(e.target.value)} onBlur={saveField} />

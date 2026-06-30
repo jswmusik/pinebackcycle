@@ -2,6 +2,7 @@ import { Inter } from "next/font/google";
 import "./globals.css";
 import "leaflet/dist/leaflet.css";
 import Providers from "@/components/Providers";
+import { APP_VERSION } from "@/lib/version";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -33,6 +34,9 @@ export default function RootLayout({ children }) {
     <html lang="sv" className={inter.variable}>
       <body>
         <Providers>{children}</Providers>
+        <footer className="app-footer">
+          Pineback <span className="app-version">v{APP_VERSION}</span>
+        </footer>
       </body>
     </html>
   );
