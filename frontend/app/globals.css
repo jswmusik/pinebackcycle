@@ -45,12 +45,6 @@ body {
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
 }
-/* Säkerhetsnät mot horisontell scroll om något barn råkar bli för brett.
-   `clip` (till skillnad från `hidden`) skapar ingen scroll-container och
-   påverkar därför inte position: sticky (topbar m.m.). */
-body {
-  overflow-x: clip;
-}
 
 a {
   color: var(--primary);
