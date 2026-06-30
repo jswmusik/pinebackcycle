@@ -166,6 +166,9 @@ textarea {
   border-radius: 11px;
   font-size: 14.5px;
   font-family: inherit;
+  /* Fast radhöjd så att tomma date/time-fält blir exakt lika höga som
+     text-/select-fält (de ärver annars en kortare radhöjd på iOS). */
+  line-height: 1.4;
   background: var(--surface-2);
   color: var(--text);
   transition: border-color 0.12s ease, box-shadow 0.12s ease, background 0.12s ease;
@@ -458,9 +461,9 @@ tbody tr:hover {
 /* --- App-footer (versionsstämpel) --- */
 .app-footer {
   text-align: center;
-  padding: 10px 14px calc(12px + env(safe-area-inset-bottom));
+  padding: 6px 14px calc(8px + env(safe-area-inset-bottom));
   color: var(--muted);
-  font-size: 12.5px;
+  font-size: 12px;
   letter-spacing: 0.01em;
 }
 .app-version {
@@ -1549,7 +1552,7 @@ body:has(.center-screen) .app-footer {
     font-size: 15px;
   }
   .container {
-    padding: 18px 14px 28px;
+    padding: 18px 14px 14px;
   }
   .topbar {
     padding: 11px 14px;
