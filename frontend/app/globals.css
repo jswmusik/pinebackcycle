@@ -166,9 +166,10 @@ textarea {
   border-radius: 11px;
   font-size: 14.5px;
   font-family: inherit;
-  /* Fast radhöjd så att tomma date/time-fält blir exakt lika höga som
-     text-/select-fält (de ärver annars en kortare radhöjd på iOS). */
+  /* Fast radhöjd + min-höjd så att tomma date/time-fält blir exakt lika höga
+     som text-/select-fält (de ärver annars en kortare radhöjd på iOS). */
   line-height: 1.4;
+  min-height: 44px;
   background: var(--surface-2);
   color: var(--text);
   transition: border-color 0.12s ease, box-shadow 0.12s ease, background 0.12s ease;
@@ -1603,6 +1604,7 @@ body:has(.center-screen) .app-footer {
   textarea {
     padding: 12px 13px;
     font-size: 16px; /* hindrar iOS auto-zoom på fokus */
+    min-height: 48px;
   }
   /* Toppförankrad modal på mobil – tangentbordet (nederst) täcker den aldrig */
   .modal-overlay {
