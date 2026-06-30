@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { auth, ensureCsrf } from "@/lib/api";
+import Icon from "@/components/Icon";
 
 export default function LoginPage() {
   const [username, setUsername] = useState("");
@@ -28,7 +29,9 @@ export default function LoginPage() {
   return (
     <div className="center-screen login-bg">
       <div className="login-card">
-        <div className="login-logo">🚲</div>
+        <div className="login-logo">
+          <Icon name="bike" size={46} tone="pink" strokeWidth={1.75} />
+        </div>
         <h2 style={{ textAlign: "center", margin: "0 0 2px" }}>Pineback</h2>
         <p
           className="muted"

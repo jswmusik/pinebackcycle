@@ -2,6 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { auth } from "@/lib/api";
+import Icon from "@/components/Icon";
 
 export default function TopBar({ user }) {
   const router = useRouter();
@@ -18,7 +19,7 @@ export default function TopBar({ user }) {
   return (
     <div className="topbar">
       <a href="/" className="brand">
-        <span className="brand-mark">🚲</span>
+        <Icon name="bike" size={22} tone="pink" className="brand-mark" />
         <span className="brand-name">Pineback</span>
       </a>
       <div className="row">

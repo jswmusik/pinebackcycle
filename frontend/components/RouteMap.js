@@ -14,6 +14,7 @@ import {
 import L from "leaflet";
 import { findAccommodation, osmUrl } from "@/lib/overpass";
 import { useToast } from "@/components/Providers";
+import Icon from "@/components/Icon";
 
 // Leaflets standardikoner går sönder i bundlers – peka mot CDN-bilder.
 const icon = L.icon({
@@ -137,7 +138,13 @@ export default function RouteMap({
           disabled={searching}
           style={{ boxShadow: "0 2px 8px rgba(0,0,0,0.2)" }}
         >
-          {searching ? "Söker…" : "🏕️ Hitta boenden här"}
+          {searching ? (
+            "Söker…"
+          ) : (
+            <>
+              <Icon name="tent" size={15} /> Hitta boenden här
+            </>
+          )}
         </button>
         {pois.length > 0 && (
           <button
@@ -259,9 +266,14 @@ export default function RouteMap({
             onClick={onCalculate}
             disabled={!canCalculate || calculating}
           >
-            {calculating
-              ? "Beräknar…"
-              : `🧮 Beräkna rutt (${waypoints.length} punkter)`}
+            {calculating ? (
+              "Beräknar…"
+            ) : (
+              <>
+                <Icon name="route" size={17} /> Beräkna rutt ({waypoints.length}{" "}
+                punkter)
+              </>
+            )}
           </button>
         </div>
       )}

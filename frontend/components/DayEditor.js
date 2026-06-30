@@ -15,6 +15,7 @@ import {
 } from "@/lib/constants";
 import { useToast, useConfirm } from "@/components/Providers";
 import ElevationProfile from "@/components/ElevationProfile";
+import Icon from "@/components/Icon";
 
 // Leaflet får inte renderas på servern.
 const RouteMap = dynamic(() => import("@/components/RouteMap"), {
@@ -22,7 +23,7 @@ const RouteMap = dynamic(() => import("@/components/RouteMap"), {
   loading: () => <div className="muted">Laddar karta…</div>,
 });
 
-const KIND_ICON = { EXPENSE: "💳", NOTE: "📝", INCIDENT: "⚠️" };
+const KIND_ICON = { EXPENSE: "card", NOTE: "note", INCIDENT: "alert" };
 function logClock(iso) {
   const d = new Date(iso);
   const p = (n) => String(n).padStart(2, "0");
@@ -108,14 +109,14 @@ export default function DayEditor({ dayId, onChanged }) {
           className="btn"
           style={{ flex: 1, justifyContent: "center" }}
         >
-          🧭 Navigera
+          <Icon name="navigate" size={17} /> Navigera
         </a>
         <a
           href={`/days/${day.id}/ride`}
           className="btn btn-secondary"
           style={{ flex: 1, justifyContent: "center" }}
         >
-          🚴 Cykelläge
+          <Icon name="bike" size={17} /> Cykelläge
         </a>
       </div>
 
@@ -211,7 +212,9 @@ function ActualReview({ day, onChanged, toast }) {
           <div className="logbook">
             {logs.map((l) => (
               <div key={l.id} className="log-item">
-                <span className="log-icon">{KIND_ICON[l.kind]}</span>
+                <span className="log-icon">
+                  <Icon name={KIND_ICON[l.kind]} size={16} />
+                </span>
                 <span className="log-time muted">{logClock(l.created_at)}</span>
                 <span className="log-text">
                   {l.category && (
@@ -238,8 +241,11 @@ function ActualReview({ day, onChanged, toast }) {
         </>
       )}
 
-      <p className="muted" style={{ fontSize: 12.5, marginBottom: 0, marginTop: 14 }}>
-        Live-loggning och GPS-spårning sker i 🚴 Cykelläge.
+      <p
+        className="muted"
+        style={{ fontSize: 12.5, marginBottom: 0, marginTop: 14, display: "inline-flex", alignItems: "center", gap: 5, flexWrap: "wrap" }}
+      >
+        Live-loggning och GPS-spårning sker i <Icon name="bike" size={14} /> Cykelläge.
       </p>
     </div>
   );
@@ -275,8 +281,11 @@ function RestDayToggle({ day, onChanged, toast }) {
         onChange={toggle}
         style={{ width: 18, height: 18 }}
       />
-      <label htmlFor="restday" style={{ margin: 0, textTransform: "none", fontSize: 15 }}>
-        🛌 Vilodag (ingen cykling denna dag)
+      <label
+        htmlFor="restday"
+        style={{ margin: 0, textTransform: "none", fontSize: 15, display: "inline-flex", alignItems: "center", gap: 8 }}
+      >
+        <Icon name="bed" size={17} /> Vilodag (ingen cykling denna dag)
       </label>
     </div>
   );
@@ -705,8 +714,8 @@ function StageRow({
               <span className="badge badge-amber">
                 Nivå {stage.difficulty_level} · {diff.label} · {diff.speed} km/h
               </span>
-              <span className="muted">
-                ⏱ {formatMinutes(stage.estimated_duration_minutes)}
+              <span className="muted" style={{ display: "inline-flex", alignItems: "center", gap: 5 }}>
+                <Icon name="clock" size={14} /> {formatMinutes(stage.estimated_duration_minutes)}
               </span>
             </>
           ) : (

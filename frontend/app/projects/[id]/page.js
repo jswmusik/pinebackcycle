@@ -11,6 +11,7 @@ import TopBar from "@/components/TopBar";
 import Modal from "@/components/Modal";
 import DayEditor from "@/components/DayEditor";
 import { FullScreenSpinner } from "@/components/Spinner";
+import Icon from "@/components/Icon";
 
 const FullRouteMap = dynamic(() => import("@/components/FullRouteMap"), {
   ssr: false,
@@ -105,21 +106,23 @@ export default function ProjectPage() {
         {/* Budget-toppen */}
         <div className="summary-stats">
           <div className="card hero-stat">
-            <span className="hero-icon">📏</span>
+            <span className="hero-icon"><Icon name="ruler" size={24} /></span>
             <div>
               <div className="hero-value">{s.total_distance_km}</div>
               <div className="hero-label">km totalt</div>
             </div>
           </div>
           <div className="card hero-stat">
-            <span className="hero-icon">💳</span>
+            <span className="hero-icon"><Icon name="card" size={24} /></span>
             <div>
               <div className="hero-value">{formatKr(project.total_cost)}</div>
               <div className="hero-label">av {formatKr(project.budget)}</div>
             </div>
           </div>
           <div className="card hero-stat">
-            <span className="hero-icon">{overBudget ? "⚠️" : "💰"}</span>
+            <span className="hero-icon">
+              <Icon name={overBudget ? "alert" : "wallet"} size={24} tone={overBudget ? undefined : "pink"} />
+            </span>
             <div>
               <div
                 className="hero-value"
@@ -149,11 +152,11 @@ export default function ProjectPage() {
         >
           <div className="kpi-grid">
             <Kpi label="Cykeldagar" value={s.cycling_day_count} />
-            <Kpi label="Vilodagar" value={s.rest_day_count} icon="🛌" />
+            <Kpi label="Vilodagar" value={s.rest_day_count} icon="bed" />
             <Kpi label="Snitt km / cykeldag" value={s.avg_km_per_cycling_day} />
             <Kpi label="Längsta dag (km)" value={s.longest_day_km} />
             <Kpi label="Total cykeltid" value={formatMinutes(s.total_duration_minutes)} />
-            <Kpi label="Total stigning" value={`${s.total_ascent_m} m`} icon="⛰️" />
+            <Kpi label="Total stigning" value={`${s.total_ascent_m} m`} icon="mountain" />
             <Kpi label="Total nedför" value={`${s.total_descent_m} m`} />
             <Kpi label="Högsta punkt" value={`${s.highest_point_m} m`} />
             <Kpi
@@ -163,7 +166,7 @@ export default function ProjectPage() {
               })`}
             />
             <Kpi label="Antal etapper" value={s.stage_count} />
-            <Kpi label="Länder" value={s.country_count} icon="🌍" />
+            <Kpi label="Länder" value={s.country_count} icon="globe" />
             <Kpi label="Kostnad / km" value={formatKr(s.cost_per_km)} />
             <Kpi label="Snittkostnad / dag" value={formatKr(s.avg_cost_per_day)} />
           </div>
@@ -361,7 +364,7 @@ function Countries({ countries }) {
           <Kpi label="Sträcka i landet" value={`${country.km} km`} />
           <Kpi label="Andel av resan" value={`${country.percent}%`} />
           <Kpi label="Etapper" value={country.stage_count} />
-          <Kpi label="Stigning" value={`${country.ascent_m} m`} icon="⛰️" />
+          <Kpi label="Stigning" value={`${country.ascent_m} m`} icon="mountain" />
         </div>
       )}
     </Collapsible>
@@ -370,9 +373,14 @@ function Countries({ countries }) {
 
 function Calories({ stats, onEdit }) {
   const kcal = (n) => `${Math.round(n).toLocaleString("sv-SE")} kcal`;
-  const summary = stats.has_calorie_profile
-    ? `🔥 ${kcal(stats.total_cycling_calories)} på cykeln`
-    : "Fyll i din cyklistprofil";
+  const summary = stats.has_calorie_profile ? (
+    <span style={{ display: "inline-flex", alignItems: "center", gap: 6 }}>
+      <Icon name="flame" size={14} tone="pink" />
+      {kcal(stats.total_cycling_calories)} på cykeln
+    </span>
+  ) : (
+    "Fyll i din cyklistprofil"
+  );
 
   return (
     <Collapsible title="Kalorier" summary={summary}>
@@ -391,7 +399,7 @@ function Calories({ stats, onEdit }) {
             <Kpi
               label="Förbränt på cykeln (hela resan)"
               value={kcal(stats.total_cycling_calories)}
-              icon="🚴"
+              icon="bike"
             />
             <Kpi
               label="Snitt på cykeln / cykeldag"
@@ -427,8 +435,8 @@ function Calories({ stats, onEdit }) {
 function Kpi({ label, value, icon }) {
   return (
     <div className="kpi">
-      <div className="kpi-value">
-        {icon && <span style={{ marginRight: 4 }}>{icon}</span>}
+      <div className="kpi-value" style={{ display: "inline-flex", alignItems: "center", gap: 6 }}>
+        {icon && <Icon name={icon} size={17} />}
         {value}
       </div>
       <div className="kpi-label">{label}</div>
@@ -710,7 +718,7 @@ function DayRow({ day, budget, hasCalorieProfile, onOpen }) {
         <div className="dc-body">
           <div className="dc-route">
             {day.is_rest_day ? (
-              <>🛌 Vilodag</>
+              <><Icon name="bed" size={15} /> Vilodag</>
             ) : route ? (
               <>
                 {route.fromCountry && (
@@ -728,11 +736,21 @@ function DayRow({ day, budget, hasCalorieProfile, onOpen }) {
           </div>
           <div className="dc-meta">
             {!day.is_rest_day && day.distance_km > 0 && (
-              <span>📏 {day.distance_km} km</span>
+              <span style={{ display: "inline-flex", alignItems: "center", gap: 4 }}>
+                <Icon name="ruler" size={13} /> {day.distance_km} km
+              </span>
             )}
-            {duration > 0 && <span>⏱ {formatMinutes(duration)}</span>}
+            {duration > 0 && (
+              <span style={{ display: "inline-flex", alignItems: "center", gap: 4 }}>
+                <Icon name="clock" size={13} /> {formatMinutes(duration)}
+              </span>
+            )}
             {route?.stops > 1 && <span className="hide-mobile">{route.stops} etapper</span>}
-            {acc !== "–" && <span className="hide-mobile">🛏️ {acc}</span>}
+            {acc !== "–" && (
+              <span className="hide-mobile" style={{ display: "inline-flex", alignItems: "center", gap: 4 }}>
+                <Icon name="bed" size={13} /> {acc}
+              </span>
+            )}
             {!day.is_rest_day &&
               !day.distance_km &&
               !duration &&
