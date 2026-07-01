@@ -81,6 +81,24 @@ export default function RouteMap({
   const [map, setMap] = useState(null);
   const [pois, setPois] = useState([]);
   const [searching, setSearching] = useState(false);
+  const [expanded, setExpanded] = useState(false);
+
+  // När kartan byter storlek (helskärm på/av) måste Leaflet räkna om sina rutor.
+  useEffect(() => {
+    if (!map) return;
+    const t = setTimeout(() => map.invalidateSize(), 260);
+    return () => clearTimeout(t);
+  }, [expanded, map]);
+
+  // Esc stänger helskärmsläget.
+  useEffect(() => {
+    if (!expanded) return;
+    const onKey = (e) => {
+      if (e.key === "Escape") setExpanded(false);
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [expanded]);
 
   const center = waypoints.length ? toLatLng(waypoints[0]) : [60.13, 15.0];
 
@@ -121,17 +139,26 @@ export default function RouteMap({
   const trackLine = (track || []).map(toLatLng);
 
   return (
-    <div style={{ position: "relative" }}>
-      <div
-        style={{
-          position: "absolute",
-          top: 10,
-          right: 10,
-          zIndex: 1000,
-          display: "flex",
-          gap: 6,
-        }}
-      >
+    <div className={`route-map ${expanded ? "is-fullscreen" : ""}`}>
+      <div className="map-ctrl map-ctrl-tl">
+        <button
+          className="btn-secondary btn-sm"
+          onClick={() => setExpanded((v) => !v)}
+          style={{ boxShadow: "0 2px 8px rgba(0,0,0,0.2)" }}
+        >
+          {expanded ? (
+            <>
+              <Icon name="minimize" size={15} /> Stäng
+            </>
+          ) : (
+            <>
+              <Icon name="maximize" size={15} /> Större karta
+            </>
+          )}
+        </button>
+      </div>
+
+      <div className="map-ctrl map-ctrl-tr">
         <button
           className="btn-sm"
           onClick={searchAccommodation}
@@ -160,7 +187,11 @@ export default function RouteMap({
       <MapContainer
         center={center}
         zoom={9}
-        style={{ height: 420, width: "100%", borderRadius: 12 }}
+        style={{
+          height: expanded ? "100%" : 420,
+          width: "100%",
+          borderRadius: expanded ? 0 : 12,
+        }}
         scrollWheelZoom
       >
         <TileLayer

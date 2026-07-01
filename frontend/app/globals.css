@@ -474,6 +474,39 @@ body:has(.center-screen) .app-footer {
   display: none;
 }
 
+/* --- Ruttkarta: kontroller + helskärmsläge --- */
+.route-map {
+  position: relative;
+}
+.map-ctrl {
+  position: absolute;
+  z-index: 1000;
+  display: flex;
+  gap: 6px;
+}
+.map-ctrl-tl {
+  top: 10px;
+  left: 10px;
+}
+.map-ctrl-tr {
+  top: 10px;
+  right: 10px;
+}
+/* Helskärm: kartan täcker hela viewporten (över modalen) medan man ritar. */
+.route-map.is-fullscreen {
+  position: fixed;
+  inset: 0;
+  z-index: 3000;
+  background: var(--bg);
+  animation: fade-in 0.15s ease;
+}
+.route-map.is-fullscreen .map-ctrl {
+  top: max(12px, env(safe-area-inset-top));
+}
+.route-map.is-fullscreen .map-calc {
+  bottom: max(16px, env(safe-area-inset-bottom));
+}
+
 /* --- "Beräkna rutt"-knapp ovanpå kartan --- */
 .map-calc {
   position: absolute;
