@@ -10,6 +10,7 @@ import { useToast, useConfirm } from "@/components/Providers";
 import TopBar from "@/components/TopBar";
 import Modal from "@/components/Modal";
 import DayEditor from "@/components/DayEditor";
+import DayConditions from "@/components/DayConditions";
 import { FullScreenSpinner } from "@/components/Spinner";
 import Icon from "@/components/Icon";
 
@@ -29,6 +30,7 @@ export default function ProjectPage() {
   const [project, setProject] = useState(null);
   const [error, setError] = useState("");
   const [openDay, setOpenDay] = useState(null);
+  const [openConditions, setOpenConditions] = useState(null);
   const [editing, setEditing] = useState(false);
 
   const load = useCallback(() => {
@@ -186,6 +188,7 @@ export default function ProjectPage() {
             onOpen={(day) =>
               setOpenDay({ id: day.id, date: day.date, weekday: day.weekday })
             }
+            onConditions={(day) => setOpenConditions(day)}
           />
         </div>
       </div>
@@ -197,6 +200,21 @@ export default function ProjectPage() {
           onDone={() => setOpenDay(null)}
         >
           <DayEditor dayId={openDay.id} onChanged={load} />
+        </Modal>
+      )}
+
+      {openConditions && (
+        <Modal
+          title={`Förutsättningar · ${openConditions.weekday} ${openConditions.date}`}
+          onClose={() => setOpenConditions(null)}
+        >
+          <DayConditions
+            dayId={openConditions.id}
+            routeKey={(openConditions.stages || [])
+              .map((st) => `${st.id}:${st.distance_km}`)
+              .join("|")}
+            bare
+          />
         </Modal>
       )}
 
@@ -639,7 +657,7 @@ function dayRoute(day) {
   };
 }
 
-function DayList({ days, budgetByDay, hasCalorieProfile, onOpen }) {
+function DayList({ days, budgetByDay, hasCalorieProfile, onOpen, onConditions }) {
   // Gruppera dagarna per ISO-vecka.
   const groups = [];
   let cur = null;
@@ -669,6 +687,7 @@ function DayList({ days, budgetByDay, hasCalorieProfile, onOpen }) {
               budget={budgetByDay[day.id]}
               hasCalorieProfile={hasCalorieProfile}
               onOpen={onOpen}
+              onConditions={onConditions}
             />
           ))}
         </div>
@@ -677,7 +696,7 @@ function DayList({ days, budgetByDay, hasCalorieProfile, onOpen }) {
   );
 }
 
-function DayRow({ day, budget, hasCalorieProfile, onOpen }) {
+function DayRow({ day, budget, hasCalorieProfile, onOpen, onConditions }) {
   const route = dayRoute(day);
   const duration = (day.stages || []).reduce(
     (sum, st) => sum + (st.estimated_duration_minutes || 0),
@@ -765,6 +784,20 @@ function DayRow({ day, budget, hasCalorieProfile, onOpen }) {
           </span>
           {budget && <span className="dc-budget muted">/ {formatKr(budget.budget)}</span>}
         </div>
+
+        {!day.is_rest_day && day.distance_km > 0 && (
+          <button
+            className="daycard-cond"
+            onClick={(e) => {
+              e.stopPropagation();
+              onConditions(day);
+            }}
+            aria-label="Dagens förutsättningar"
+            title="Väder & förutsättningar"
+          >
+            <Icon name="cloud-sun" size={17} />
+          </button>
+        )}
       </div>
 
       {hasActual && (

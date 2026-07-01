@@ -247,8 +247,9 @@ def country_breakdown(geometry):
 
 # --- Väder & vind längs rutten (Open-Meteo, gratis, ingen nyckel) ------------
 OPEN_METEO_URL = 'https://api.open-meteo.com/v1/forecast'
-# Open-Meteo ger prognos ~16 dagar framåt.
-FORECAST_HORIZON_DAYS = 15
+# Open-Meteo ger prognos ~16 dagar framåt, men prognosen blir opålitlig långt
+# fram – vi visar därför bara väder inom 10 dagar.
+FORECAST_HORIZON_DAYS = 10
 
 
 def _bearing(a, b):
