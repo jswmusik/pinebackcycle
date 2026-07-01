@@ -1,10 +1,11 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import {
   MapContainer,
   TileLayer,
+  LayersControl,
   Marker,
   Polyline,
   Popup,
@@ -48,13 +49,33 @@ function ClickHandler({ onAdd }) {
   return null;
 }
 
-function FitBounds({ points }) {
+// Anpassar vyn till rutten ENDAST vid första laddningen och när en ny rutt
+// (geometry) laddas – inte varje gång man lägger en punkt. Då står kartan
+// still medan man klickar ut markörer.
+function AutoFit({ points, geometry }) {
   const map = useMap();
+  const didInit = useRef(false);
+  const prevGeom = useRef(geometry);
+
   useEffect(() => {
-    if (points.length === 0) return;
-    if (points.length === 1) map.setView(toLatLng(points[0]), 12);
-    else map.fitBounds(points.map(toLatLng), { padding: [40, 40] });
-  }, [points, map]);
+    const fit = (pts) => {
+      if (!pts.length) return;
+      if (pts.length === 1) map.setView(pts[0], 13);
+      else map.fitBounds(pts, { padding: [40, 40] });
+    };
+    if (!didInit.current) {
+      didInit.current = true;
+      prevGeom.current = geometry;
+      fit(geometry?.coordinates?.map(toLatLng) || points.map(toLatLng));
+      return;
+    }
+    // En ny beräknad/inläst rutt → visa hela den. Nya punkter → rör inte vyn.
+    if (geometry && geometry !== prevGeom.current) {
+      fit(geometry.coordinates.map(toLatLng));
+    }
+    prevGeom.current = geometry;
+  }, [points, geometry, map]);
+
   return null;
 }
 
@@ -135,13 +156,24 @@ export default function RouteMap({
     }
   }
 
+  // Zooma till hela rutten på begäran (knapp) – annars står kartan still.
+  function fitToRoute() {
+    if (!map) return;
+    const pts = routeGeometry?.coordinates?.map(toLatLng) || waypoints.map(toLatLng);
+    if (!pts.length) return;
+    if (pts.length === 1) map.setView(pts[0], 13);
+    else map.fitBounds(pts, { padding: [40, 40] });
+  }
+
+  const canFit = waypoints.length > 0 || !!routeGeometry;
+
   const line =
     routeGeometry?.coordinates?.map(toLatLng) || waypoints.map(toLatLng);
   const trackLine = (track || []).map(toLatLng);
 
   const content = (
     <div className={`route-map ${expanded ? "is-fullscreen" : ""}`}>
-      <div className="map-ctrl map-ctrl-tl">
+      <div className="map-ctrl map-ctrl-tr">
         <button
           className="btn-secondary btn-sm"
           onClick={() => setExpanded((v) => !v)}
@@ -157,9 +189,14 @@ export default function RouteMap({
             </>
           )}
         </button>
-      </div>
-
-      <div className="map-ctrl map-ctrl-tr">
+        <button
+          className="btn-secondary btn-sm"
+          onClick={fitToRoute}
+          disabled={!canFit}
+          style={{ boxShadow: "0 2px 8px rgba(0,0,0,0.2)" }}
+        >
+          <Icon name="scan" size={15} /> Visa hela rutten
+        </button>
         <button
           className="btn-sm"
           onClick={searchAccommodation}
@@ -195,13 +232,33 @@ export default function RouteMap({
         }}
         scrollWheelZoom
       >
-        <TileLayer
-          attribution="&copy; OpenStreetMap-bidragsgivare"
-          url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-        />
+        <LayersControl position="bottomright">
+          <LayersControl.BaseLayer checked name="Karta">
+            <TileLayer
+              attribution="&copy; OpenStreetMap-bidragsgivare"
+              url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+            />
+          </LayersControl.BaseLayer>
+          <LayersControl.BaseLayer name="Satellit">
+            <TileLayer
+              className="tiles-plain"
+              attribution="Tiles &copy; Esri — Source: Esri, Maxar, Earthstar Geographics m.fl."
+              url="https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}"
+              maxZoom={19}
+            />
+          </LayersControl.BaseLayer>
+          <LayersControl.BaseLayer name="Terräng">
+            <TileLayer
+              className="tiles-plain"
+              attribution="&copy; OpenStreetMap-bidragsgivare, SRTM | Stil: OpenTopoMap (CC-BY-SA)"
+              url="https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png"
+              maxZoom={17}
+            />
+          </LayersControl.BaseLayer>
+        </LayersControl>
         <MapRef onReady={setMap} />
         {editable && <ClickHandler onAdd={addPoint} />}
-        <FitBounds points={waypoints} />
+        <AutoFit points={waypoints} geometry={routeGeometry} />
 
         {waypoints.map((p, i) => (
           <Marker

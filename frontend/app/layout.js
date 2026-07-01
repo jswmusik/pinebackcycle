@@ -41,6 +41,8 @@ export default function RootLayout({ children }) {
         <link rel="preconnect" href="https://flagcdn.com" crossOrigin="anonymous" />
         <link rel="preconnect" href="https://unpkg.com" crossOrigin="anonymous" />
         <link rel="dns-prefetch" href="https://nominatim.openstreetmap.org" />
+        <link rel="dns-prefetch" href="https://server.arcgisonline.com" />
+        <link rel="dns-prefetch" href="https://a.tile.opentopomap.org" />
         <Providers>{children}</Providers>
         <footer className="app-footer">
           Pineback <span className="app-version">v{APP_VERSION}</span>

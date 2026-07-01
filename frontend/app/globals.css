@@ -452,6 +452,10 @@ tbody tr:hover {
   filter: invert(1) hue-rotate(180deg) brightness(0.95) contrast(0.9)
     saturate(0.8);
 }
+/* Satellit/terräng ska visas i naturliga färger (inget mörkfilter). */
+.leaflet-tile.tiles-plain {
+  filter: none;
+}
 .poi-marker {
   background: none;
   border: none;
@@ -514,6 +518,8 @@ body:has(.center-screen) .app-footer {
 .map-ctrl-tr {
   top: 10px;
   right: 10px;
+  flex-direction: column;
+  align-items: flex-end;
 }
 /* Helskärm: kartan täcker hela viewporten (över modalen) medan man ritar. */
 .route-map.is-fullscreen {
