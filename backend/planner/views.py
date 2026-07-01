@@ -18,7 +18,13 @@ from .serializers import (
     ProjectListSerializer,
     StageSerializer,
 )
-from .services import ORSError, country_breakdown, get_route, reverse_place
+from .services import (
+    ORSError,
+    country_breakdown,
+    day_conditions,
+    get_route,
+    reverse_place,
+)
 
 
 # --- Autentisering -----------------------------------------------------------
@@ -131,6 +137,11 @@ class DayViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         return Day.objects.filter(project__owner=self.request.user)
+
+    @action(detail=True, methods=['get'])
+    def conditions(self, request, pk=None):
+        """Dagens förutsättningar: väder + vind längs rutten + förväntad stat."""
+        return Response(day_conditions(self.get_object()))
 
 
 # --- Etapper -----------------------------------------------------------------

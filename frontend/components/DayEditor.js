@@ -15,6 +15,7 @@ import {
 } from "@/lib/constants";
 import { useToast, useConfirm } from "@/components/Providers";
 import ElevationProfile from "@/components/ElevationProfile";
+import DayConditions from "@/components/DayConditions";
 import Icon from "@/components/Icon";
 
 // Leaflet får inte renderas på servern.
@@ -133,6 +134,15 @@ export default function DayEditor({ dayId, onChanged }) {
           <Icon name="bike" size={17} /> Cykelläge
         </a>
       </div>
+
+      {!day.is_rest_day && (
+        <DayConditions
+          dayId={day.id}
+          routeKey={day.stages
+            .map((s) => `${s.id}:${s.distance_km}`)
+            .join("|")}
+        />
+      )}
 
       {hasActual && (
         <ActualReview day={day} onChanged={refresh} toast={toast} />
