@@ -93,11 +93,18 @@ export default function DayConditions({ dayId, routeKey, bare = false }) {
                 <div style={{ lineHeight: 1.15 }}>
                   <div style={{ fontWeight: 700 }}>{EFFECT[s.wind_effect].label}</div>
                   <div className="muted" style={{ fontSize: 12 }}>
-                    {s.wind_avg_kmh} km/h
+                    {s.wind_desc} · {s.wind_avg_ms} m/s
                   </div>
                 </div>
               </div>
             </div>
+
+            {s.tough_wind && (
+              <p className="cond-warn">
+                <Icon name="wind" size={15} /> Räkna med en jobbig dag – frisk
+                motvind längs sträckan.
+              </p>
+            )}
 
             <div className="cond-timeline">
               {data.points.map((p, i) => (
@@ -111,12 +118,17 @@ export default function DayConditions({ dayId, routeKey, bare = false }) {
                       size={13}
                       style={{ transform: `rotate(${p.wind_dir + 180}deg)` }}
                     />
-                    {p.wind_kmh}
+                    {p.wind_ms}
                   </div>
                   <div className="cond-pkm muted">{p.km} km</div>
                 </div>
               ))}
             </div>
+
+            <p className="cond-legend muted">
+              Vind (m/s): svag &lt;3 · måttlig 3–8 · frisk 8–11 · hård &gt;11.
+              Pilen visar vindriktningen.
+            </p>
           </>
         ) : (
           <p className="muted" style={{ marginTop: 0 }}>

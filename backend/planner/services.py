@@ -299,6 +299,7 @@ def _fetch_weather(latlngs, date_iso):
         'longitude': lon,
         'hourly': ('temperature_2m,precipitation,precipitation_probability,'
                    'weather_code,wind_speed_10m,wind_direction_10m'),
+        'wind_speed_unit': 'ms',  # meter per sekund (svensk standard)
         'start_date': date_iso,
         'end_date': date_iso,
         'timezone': 'auto',
@@ -318,6 +319,19 @@ def _hour_index(times, hour):
         if t.endswith(want):
             return j
     return min(hour, len(times) - 1) if times else 0
+
+
+def _wind_desc(ms):
+    """Vindstyrka i ord (förenklad SMHI-skala) för m/s."""
+    if ms < 3.4:
+        return 'Svag vind'
+    if ms < 8:
+        return 'Måttlig vind'
+    if ms < 10.8:
+        return 'Frisk vind'
+    if ms < 13.9:
+        return 'Hård vind'
+    return 'Mycket hård vind'
 
 
 def day_conditions(day):
@@ -409,9 +423,10 @@ def day_conditions(day):
         idx = sm['idx']
         nxt = min(idx + step, len(coords) - 1)
         brng = _bearing(coords[idx], coords[nxt]) if nxt != idx else 0
-        # Motvind: positiv komponent när vinden kommer från färdriktningen.
+        # Motvind: positiv komponent när vinden kommer från färdriktningen (m/s).
         head = round(wind * math.cos(math.radians(brng - wdir)), 1)
-        effect = 'headwind' if head > 4 else ('tailwind' if head < -4 else 'crosswind')
+        effect = ('headwind' if head > 1.5
+                  else 'tailwind' if head < -1.5 else 'crosswind')
 
         if precip and precip > 0.2:
             any_precip = True
@@ -427,10 +442,10 @@ def day_conditions(day):
             'temp': round(temp),
             'code': code,
             'precip_prob': round(prob or 0),
-            'wind_kmh': round(wind),
+            'wind_ms': round(wind),
             'wind_dir': round(wdir),
             'bearing': round(brng),
-            'headwind_kmh': head,
+            'headwind_ms': head,
             'effect': effect,
         })
 
@@ -439,8 +454,11 @@ def day_conditions(day):
                 'days_until': days_until, 'stats': stats}
 
     avg_head = sum(heads) / len(heads)
-    wind_effect = ('headwind' if avg_head > 4
-                   else 'tailwind' if avg_head < -4 else 'crosswind')
+    avg_wind = sum(winds) / len(winds)
+    wind_effect = ('headwind' if avg_head > 1.5
+                   else 'tailwind' if avg_head < -1.5 else 'crosswind')
+    # "Jobbig" om det är frisk vind eller mer OCH mestadels motvind.
+    tough_wind = avg_wind >= 8 and wind_effect == 'headwind'
     summary = {
         'temp_min': round(min(temps)),
         'temp_max': round(max(temps)),
@@ -448,8 +466,10 @@ def day_conditions(day):
         'rain': any_precip or max(probs) >= 40,
         'worst_code': max(codes),
         'wind_effect': wind_effect,
-        'wind_avg_kmh': round(sum(winds) / len(winds)),
-        'headwind_kmh': round(avg_head),
+        'wind_avg_ms': round(avg_wind),
+        'wind_desc': _wind_desc(avg_wind),
+        'tough_wind': tough_wind,
+        'headwind_ms': round(avg_head),
         'start_time': f'{(start_min // 60) % 24:02d}:{start_min % 60:02d}',
     }
 
