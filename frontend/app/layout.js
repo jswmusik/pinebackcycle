@@ -33,6 +33,14 @@ export default function RootLayout({ children }) {
   return (
     <html lang="sv" className={inter.variable}>
       <body>
+        {/* Förvärm anslutningar till externa tjänster så kartrutor, flaggor och
+            kartikoner laddar snabbare (DNS + TCP + TLS klart i förväg). */}
+        <link rel="preconnect" href="https://a.tile.openstreetmap.org" crossOrigin="anonymous" />
+        <link rel="preconnect" href="https://b.tile.openstreetmap.org" crossOrigin="anonymous" />
+        <link rel="preconnect" href="https://c.tile.openstreetmap.org" crossOrigin="anonymous" />
+        <link rel="preconnect" href="https://flagcdn.com" crossOrigin="anonymous" />
+        <link rel="preconnect" href="https://unpkg.com" crossOrigin="anonymous" />
+        <link rel="dns-prefetch" href="https://nominatim.openstreetmap.org" />
         <Providers>{children}</Providers>
         <footer className="app-footer">
           Pineback <span className="app-version">v{APP_VERSION}</span>
