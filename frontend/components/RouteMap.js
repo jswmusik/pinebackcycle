@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { createPortal } from "react-dom";
 import {
   MapContainer,
   TileLayer,
@@ -138,7 +139,7 @@ export default function RouteMap({
     routeGeometry?.coordinates?.map(toLatLng) || waypoints.map(toLatLng);
   const trackLine = (track || []).map(toLatLng);
 
-  return (
+  const content = (
     <div className={`route-map ${expanded ? "is-fullscreen" : ""}`}>
       <div className="map-ctrl map-ctrl-tl">
         <button
@@ -310,4 +311,10 @@ export default function RouteMap({
       )}
     </div>
   );
+
+  // I helskärmsläge portalas kartan till <body> så den fyller hela fönstret
+  // (modalens backdrop-filter gör annars att fixed blir relativ till modalen).
+  return expanded && typeof document !== "undefined"
+    ? createPortal(content, document.body)
+    : content;
 }

@@ -5,9 +5,10 @@ import { useRouter } from "next/navigation";
 import { api } from "@/lib/api";
 import { useAuth } from "@/lib/useAuth";
 import { formatKr } from "@/lib/constants";
-import { useToast } from "@/components/Providers";
+import { useToast, useConfirm } from "@/components/Providers";
 import TopBar from "@/components/TopBar";
 import { FullScreenSpinner } from "@/components/Spinner";
+import Icon from "@/components/Icon";
 
 export default function DashboardPage() {
   const { user, loading } = useAuth();
@@ -15,12 +16,33 @@ export default function DashboardPage() {
   const [showForm, setShowForm] = useState(false);
   const router = useRouter();
   const toast = useToast();
+  const confirm = useConfirm();
 
   useEffect(() => {
     if (user) {
       api.get("/projects/").then(setProjects).catch(() => {});
     }
   }, [user]);
+
+  async function deleteProject(e, p) {
+    // Hindra kortets navigering när man klickar på papperskorgen.
+    e.preventDefault();
+    e.stopPropagation();
+    const ok = await confirm({
+      title: "Radera cykelsemester?",
+      message: `"${p.title}" och all dess planering tas bort permanent.`,
+      confirmLabel: "Radera",
+      danger: true,
+    });
+    if (!ok) return;
+    try {
+      await api.del(`/projects/${p.id}/`);
+      setProjects((list) => list.filter((x) => x.id !== p.id));
+      toast.success("Cykelsemester raderad");
+    } catch (err) {
+      toast.error(err.message || "Kunde inte radera");
+    }
+  }
 
   if (loading || !user) {
     return <FullScreenSpinner label="Laddar dina semestrar…" />;
@@ -52,13 +74,21 @@ export default function DashboardPage() {
         ) : (
           <div className="grid grid-3">
             {projects.map((p) => (
-              <a
+              <div
                 key={p.id}
-                href={`/projects/${p.id}`}
                 className="card card-hover"
-                style={{ display: "block", textDecoration: "none", color: "inherit" }}
+                onClick={() => router.push(`/projects/${p.id}`)}
+                style={{ position: "relative", cursor: "pointer", color: "inherit" }}
               >
-                <h3 style={{ marginTop: 0 }}>{p.title}</h3>
+                <button
+                  className="card-del"
+                  onClick={(e) => deleteProject(e, p)}
+                  aria-label="Radera cykelsemester"
+                  title="Radera"
+                >
+                  <Icon name="trash" size={16} />
+                </button>
+                <h3 style={{ marginTop: 0, paddingRight: 30 }}>{p.title}</h3>
                 <p className="muted" style={{ margin: "4px 0" }}>
                   {p.start_date} – {p.end_date} · {p.day_count} dagar
                 </p>
@@ -70,7 +100,7 @@ export default function DashboardPage() {
                     {formatKr(p.total_cost)} / {formatKr(p.budget)}
                   </span>
                 </div>
-              </a>
+              </div>
             ))}
           </div>
         )}
