@@ -113,6 +113,7 @@ const PATHS = {
       <path d="M16 21v-3a2 2 0 0 1 2-2h3" />
     </>
   ),
+  check: <path d="M20 6 9 17l-5-5" />,
   scan: (
     <>
       <path d="M3 7V5a2 2 0 0 1 2-2h2" />

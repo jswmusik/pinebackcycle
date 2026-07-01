@@ -194,6 +194,7 @@ export default function ProjectPage() {
         <Modal
           title={`${openDay.weekday} ${openDay.date}`}
           onClose={() => setOpenDay(null)}
+          onDone={() => setOpenDay(null)}
         >
           <DayEditor dayId={openDay.id} onChanged={load} />
         </Modal>

@@ -674,6 +674,17 @@ body:has(.center-screen) .app-footer {
   padding: 26px;
   overflow-y: auto;
 }
+/* Sticky-footer med primär "klar"-knapp (alltid synlig längst ner). */
+.modal-footer {
+  flex-shrink: 0;
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  padding: 15px 26px;
+  border-top: 1px solid var(--border);
+  background: var(--card);
+  border-radius: 0 0 20px 20px;
+}
 .modal-close {
   background: var(--surface-2);
   color: var(--text);
@@ -1696,7 +1707,19 @@ body:has(.center-screen) .app-footer {
     }
   }
   .modal-body {
-    padding: 18px 16px calc(18px + env(safe-area-inset-bottom));
+    padding: 18px 16px;
+  }
+  /* Modaler utan sticky-footer: säkra att sista innehållet klarar hemknappen. */
+  .modal:not(:has(.modal-footer)) .modal-body {
+    padding-bottom: calc(18px + env(safe-area-inset-bottom));
+  }
+  .modal-footer {
+    padding: 12px 16px calc(12px + env(safe-area-inset-bottom));
+    border-radius: 0;
+  }
+  .modal-footer .btn {
+    width: 100%;
+    justify-content: center;
   }
   /* Start/Slut-tiderna staplas på var sin rad så de aldrig trängs ihop.
      `display: block` + `flex: none` hindrar fälten från att växa på höjden

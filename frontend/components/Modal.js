@@ -1,8 +1,16 @@
 "use client";
 
 import { useEffect } from "react";
+import Icon from "@/components/Icon";
 
-export default function Modal({ title, onClose, children, maxWidth }) {
+export default function Modal({
+  title,
+  onClose,
+  children,
+  maxWidth,
+  onDone,
+  doneLabel = "Spara & stäng",
+}) {
   // Stäng med Escape + lås bakgrundens scroll (undviker dubbla scrollfält).
   useEffect(() => {
     function onKey(e) {
@@ -29,6 +37,13 @@ export default function Modal({ title, onClose, children, maxWidth }) {
           </button>
         </div>
         <div className="modal-body">{children}</div>
+        {onDone && (
+          <div className="modal-footer">
+            <button className="btn" onClick={onDone}>
+              <Icon name="check" size={17} /> {doneLabel}
+            </button>
+          </div>
+        )}
       </div>
     </div>
   );
