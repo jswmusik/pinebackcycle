@@ -1,0 +1,20 @@
+name: Keep backend warm
+
+# Render Free "somnar" efter ~15 min utan trafik, vilket ger ~50 s kallstart
+# nästa gång appen laddas. Den här jobbet pingar backenden regelbundet så den
+# hålls vaken → snabb första laddning för användarna.
+
+on:
+  schedule:
+    - cron: "*/10 * * * *" # var 10:e minut
+  workflow_dispatch: {} # gör att man kan köra den manuellt också
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Ping backend (csrf-endpoint)
+        run: |
+          curl -fsS -m 90 "https://pinebackcycle.onrender.com/api/auth/csrf/" -o /dev/null \
+            && echo "Backend pingad OK" \
+            || echo "Ping misslyckades (backenden kan ha varit mitt i en kallstart)"
