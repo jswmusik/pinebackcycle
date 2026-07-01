@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import dynamic from "next/dynamic";
 import { api } from "@/lib/api";
 import { geocode } from "@/lib/geocode";
@@ -48,10 +48,24 @@ export default function DayEditor({ dayId, onChanged }) {
     load();
   }, [load]);
 
+  // Att räkna om HELA projektet (alla dagar, ruttgeometrier, statistik) är tungt.
+  // Vi gör det bara EN gång när editorn stängs – inte vid varje liten ändring.
+  // Under redigeringen laddas bara den aktuella dagen om (snabbt).
+  const dirtyRef = useRef(false);
+  const onChangedRef = useRef(onChanged);
+  useEffect(() => {
+    onChangedRef.current = onChanged;
+  }, [onChanged]);
+  useEffect(() => {
+    return () => {
+      if (dirtyRef.current && onChangedRef.current) onChangedRef.current();
+    };
+  }, []);
+
   const refresh = useCallback(() => {
     load();
-    if (onChanged) onChanged();
-  }, [load, onChanged]);
+    dirtyRef.current = true;
+  }, [load]);
 
   if (error) return <div className="error">{error}</div>;
   if (!day) return <div className="muted">Laddar dag…</div>;
