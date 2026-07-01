@@ -536,13 +536,37 @@ body:has(.center-screen) .app-footer {
   bottom: max(16px, env(safe-area-inset-bottom));
 }
 
-/* --- "Beräkna rutt"-knapp ovanpå kartan --- */
+/* --- "Beräkna rutt"-knapp + distanspanel ovanpå kartan --- */
 .map-calc {
   position: absolute;
   bottom: 14px;
   left: 50%;
   transform: translateX(-50%);
   z-index: 1000;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+/* Visar beräknad sträcka/höjd/tid – syns även i helskärm. */
+.map-routestats {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: rgba(20, 17, 32, 0.92);
+  color: var(--muted);
+  border: 1px solid var(--border-strong);
+  border-radius: 999px;
+  padding: 7px 16px;
+  font-size: 13.5px;
+  box-shadow: var(--shadow);
+  -webkit-backdrop-filter: blur(4px);
+  backdrop-filter: blur(4px);
+  white-space: nowrap;
+}
+.map-routestats strong {
+  color: var(--text);
+  font-weight: 700;
 }
 .map-calc-btn {
   box-shadow: var(--shadow-lg);

@@ -15,6 +15,7 @@ import {
 } from "react-leaflet";
 import L from "leaflet";
 import { findAccommodation, osmUrl } from "@/lib/overpass";
+import { formatMinutes } from "@/lib/constants";
 import { useToast } from "@/components/Providers";
 import Icon from "@/components/Icon";
 
@@ -98,6 +99,7 @@ export default function RouteMap({
   onCalculate = null,
   calculating = false,
   canCalculate = false,
+  routeStats = null,
 }) {
   const toast = useToast();
   const [map, setMap] = useState(null);
@@ -348,8 +350,20 @@ export default function RouteMap({
         </div>
       )}
 
-      {onCalculate && (
+      {(onCalculate || routeStats) && (
         <div className="map-calc">
+          {routeStats && (
+            <div className="map-routestats">
+              <strong>{routeStats.distance_km} km</strong>
+              {routeStats.ascent_m != null && (
+                <span>↑ {Math.round(routeStats.ascent_m)} m</span>
+              )}
+              {routeStats.duration != null && (
+                <span>{formatMinutes(routeStats.duration)}</span>
+              )}
+            </div>
+          )}
+          {onCalculate && (
           <button
             className="btn map-calc-btn"
             onClick={onCalculate}
@@ -364,6 +378,7 @@ export default function RouteMap({
               </>
             )}
           </button>
+          )}
         </div>
       )}
     </div>

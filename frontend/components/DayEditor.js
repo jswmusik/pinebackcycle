@@ -571,6 +571,15 @@ function Stages({ day, onChanged, toast }) {
             onCalculate={saveAndCalculate}
             calculating={calculating}
             canCalculate={activePoints.length >= 2}
+            routeStats={
+              active.distance_km != null
+                ? {
+                    distance_km: active.distance_km,
+                    ascent_m: active.ascent_m,
+                    duration: active.estimated_duration_minutes,
+                  }
+                : null
+            }
           />
 
           {!isDraft && active.route_geometry && (
